@@ -1,6 +1,8 @@
 package name.stefanszymanski.kiwi
 
 class Variable(var value: Double) {
+  def this() = this(0.0)
+
   def *(coefficient: Double): Term = Symbolics.multiply(this, coefficient)
   def /(denominator: Double): Term = Symbolics.divide(this, denominator)
   def unary_- : Term = Symbolics.negate(this)
