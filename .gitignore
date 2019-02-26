@@ -3,4 +3,4 @@
 *.iws
 .idea
 out
-classes
+target/
