@@ -4,13 +4,13 @@ package name.stefanszymanski.kiwi
 object Symbolics {
   def multiply(variable: Variable, coefficient: Double): Term = new Term(variable, coefficient)
 
-  def divide(variable: Variable, denominator: Double): Term = multiply(variable, (1.0 / denominator))
+  def divide(variable: Variable, denominator: Double): Term = multiply(variable, 1.0 / denominator)
 
   def negate(variable: Variable): Term = multiply(variable, -1.0)
 
   def multiply(term: Term, coefficient: Double): Term = new Term(term.variable, term.coefficient * coefficient)
 
-  def divide(term: Term, denominator: Double): Term = multiply(term, (1.0 / denominator))
+  def divide(term: Term, denominator: Double): Term = multiply(term, 1.0 / denominator)
 
   def negate(term: Term): Term = multiply(term, -1.0)
 
@@ -29,7 +29,7 @@ object Symbolics {
     }
   }
 
-  def divide(expression: Expression, denominator: Double): Expression = multiply(expression, (1.0 / denominator))
+  def divide(expression: Expression, denominator: Double): Expression = multiply(expression, 1.0 / denominator)
 
   def divide(expression1: Expression, expression2: Expression): Expression = {
     if (expression2.isConstant) {

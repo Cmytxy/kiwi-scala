@@ -5,11 +5,11 @@ object Symbol {
 
   object Type extends Enumeration {
     type Type = Value
-    val invalid = Type
-    val external = Type
-    val slack = Type
-    val error = Type
-    val dummy = Type
+    val invalid = Value
+    val external = Value
+    val slack = Value
+    val error = Value
+    val dummy = Value
   }
 
   def Invalid(): Symbol = new Symbol(Type.invalid)
@@ -19,4 +19,4 @@ object Symbol {
   def Dummy(): Symbol = new Symbol(Type.dummy)
 }
 
-class Symbol(val kind: Symbol.Type.type)
+class Symbol(val kind: Symbol.Type.Value)

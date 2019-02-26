@@ -2,9 +2,9 @@ package name.stefanszymanski.kiwi
 
 import scala.collection.mutable
 
-class Constraint(var expression: Expression, var operator: RelationalOperator.type, var strength: Double) {
+class Constraint(var expression: Expression, var operator: RelationalOperator.Value, var strength: Double) {
   /* Constructors */
-  def this(expression: Expression, operator: RelationalOperator.type) = this(expression, operator, Strength.required)
+  def this(expression: Expression, operator: RelationalOperator.Value) = this(expression, operator, Strength.required)
   def this(other: Constraint, strength: Double) = this(other.expression, other.operator, strength)
 
   protected def reduce(_expression: Expression): Expression = {
@@ -21,5 +21,5 @@ class Constraint(var expression: Expression, var operator: RelationalOperator.ty
   }
 
   /* Operator methods */
-  def ^(strength: Double) = Symbolics.modifyStrength(this, strength)
+  def ^(strength: Double): Constraint = Symbolics.modifyStrength(this, strength)
 }

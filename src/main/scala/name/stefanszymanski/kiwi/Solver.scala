@@ -17,7 +17,7 @@ class Solver {
   private val infeasibleRows = mutable.ArrayBuffer.empty[Symbol]
 
   private val objective = new Row()
-  private var artificial: Row = null
+  private var artificial: Row = _
 
   /*
 	 * Add a constraint to the solver.
@@ -82,7 +82,7 @@ class Solver {
 
     // If the marker is basic, simply drop the row. Otherwise, pivot the marker into the basis and then drop the row.
     rows.get(tag.marker) match {
-      case Some(row) => rows -= tag.marker
+      case Some(_) => rows -= tag.marker
       case None =>
         val leaving = getMarkerLeavingSymbol(tag.marker)
         if (leaving.kind == Symbol.Type.invalid) {
@@ -296,21 +296,19 @@ class Solver {
           row.insert(error, -coefficient)
           objective.insert(error, strength)
         }
+      case RelationalOperator.eq if constraint.strength < Strength.required =>
+        val errorPlus = Symbol.Error()
+        val errorMinus = Symbol.Error()
+        tag.marker = errorPlus
+        tag.other = errorMinus
+        row.insert(errorPlus, -1.0)
+        row.insert(errorMinus, 1.0)
+        objective.insert(errorPlus, strength)
+        objective.insert(errorMinus, strength)
       case RelationalOperator.eq =>
-        if (constraint.strength < Strength.required) {
-          val errorPlus = Symbol.Error()
-          val errorMinus = Symbol.Error()
-          tag.marker = errorPlus
-          tag.other = errorMinus
-          row.insert(errorPlus, -1.0)
-          row.insert(errorMinus, 1.0)
-          objective.insert(errorPlus, strength)
-          objective.insert(errorMinus, strength)
-        } else {
-          val dummy = Symbol.Dummy()
-          tag.marker = dummy
-          row.insert(dummy)
-        }
+        val dummy = Symbol.Dummy()
+        tag.marker = dummy
+        row.insert(dummy)
     }
 
     // Ensure the row as a positive constant.
@@ -424,8 +422,8 @@ class Solver {
       val row = rows(leaving)
       rows -= leaving
       row.solveFor(leaving, entering)
-      rows += entering -> row
       substitute(entering, row)
+      rows += entering -> row
     }
   }
 
@@ -435,7 +433,7 @@ class Solver {
 	 * This method will perform an iteration of the dual simplex method to make the solution both optimal and feasible.
 	 */
   protected def dualOptimize(): Unit = {
-    while (infeasibleRows.size > 0) {
+    while (infeasibleRows.nonEmpty) {
       val leaving = infeasibleRows.remove(0)
       rows.get(leaving) match {
         case Some(row) if row.constant < 0.0 =>
@@ -461,10 +459,8 @@ class Solver {
 	 * If no symbol meets the criteria, it means the objective function is at a minimum, and an invalid symbol is returned.
 	 */
   protected def getEnteringSymbol(objective: Row): Symbol = {
-    for ((symbol, constant) <- objective.cells) {
-      if (symbol.kind != Symbol.Type.dummy && constant < 0.0) {
-        return symbol
-      }
+    for ((symbol, constant) <- objective.cells if symbol.kind != Symbol.Type.dummy && constant < 0.0) {
+      return symbol
     }
     Symbol.Invalid()
   }
@@ -498,10 +494,8 @@ class Solver {
 	 * If no such symbol is present, an Invalid symbol will be returned.
 	 */
   protected def anyPivotableSymbol(row: Row): Symbol = {
-    for (symbol <- row.cells.keys) {
-      if (symbol.kind == Symbol.Type.slack || symbol.kind == Symbol.Type.error) {
-        return symbol
-      }
+    for (symbol <- row.cells.keys if symbol.kind == Symbol.Type.slack || symbol.kind == Symbol.Type.error) {
+      return symbol
     }
     Symbol.Invalid()
   }
@@ -516,15 +510,13 @@ class Solver {
     var ratio = Double.MaxValue
     var leaving = Symbol.Invalid()
 
-    for ((symbol, row) <- rows) {
-      if (symbol.kind != Symbol.Type.external) {
-        val coefficient = row.coefficientFor(entering)
-        if (coefficient < 0.0) {
-          val _ratio = -row.constant / coefficient
-          if (_ratio < ratio) {
-            ratio = _ratio
-            leaving = symbol
-          }
+    for ((symbol, row) <- rows if symbol.kind != Symbol.Type.external) {
+      val coefficient = row.coefficientFor(entering)
+      if (coefficient < 0.0) {
+        val _ratio = -row.constant / coefficient
+        if (_ratio < ratio) {
+          ratio = _ratio
+          leaving = symbol
         }
       }
     }
@@ -555,4 +547,10 @@ class Solver {
     }
     true
   }
+
+  def +=(constraint: Constraint) = addConstraint(constraint)
+
+  def -=(constraint: Constraint) = removeConstraint(constraint)
+
+  def unary_! = updateVariables()
 }

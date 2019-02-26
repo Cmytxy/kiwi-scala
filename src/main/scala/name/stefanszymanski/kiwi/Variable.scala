@@ -31,4 +31,6 @@ class Variable(var value: Double) {
   def >=(term: Term): Constraint = Symbolics.ge(this, term)
   def >=(variable: Variable): Constraint = Symbolics.ge(this, variable)
   def >=(constant: Double): Constraint = Symbolics.ge(this, constant)
+
+  override def toString: String = value.toString
 }

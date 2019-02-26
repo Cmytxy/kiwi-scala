@@ -6,7 +6,7 @@ class Row(var cells: mutable.LinkedHashMap[Symbol, Double], var constant: Double
   /* Constructors */
   def this(constant: Double) = this(mutable.LinkedHashMap.empty, constant)
   def this() = this(0.0)
-  def this(other: Row) = this(other.cells, other.constant)
+  def this(other: Row) = this(other.cells.clone(), other.constant)
 
   def add(value: Double): Double = {
     constant += value

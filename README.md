@@ -11,13 +11,20 @@ val solver = new Solver
 val x = new Variable
 val y = new Variable
 
-solver.addConstraint(x == 20)
-solver.addConstraint(x + 2 == y + 10)
-
-solver.updateVariables()
+solver += x == 20
+solver += x + 2 == y + 10
+!solver
 
 println(x.value, y.value)
 // (20.0, 12.0)
+```
+
+Those three lines with `solver` use the short form of the following.
+
+```scala
+solver.addConstraint(Symbolics.equals(x, 20))
+solver.addConstraint(Symbolics.equals(Symbolics.add(x, 2), Symbolics.add(y, 10)))
+solver.updateVariables()
 ```
 
 ## Links
