@@ -1,5 +1,7 @@
 # kiwi-scala
 
+[![Build Status](https://travis-ci.org/stefanszymanski/kiwi-scala.svg?branch=master)](https://travis-ci.org/stefanszymanski/kiwi-scala)
+
 A Scala port of the [Kiwi Java](https://github.com/alexbirkett/kiwi-java) and 
 [Kiwi Haxe](https://github.com/Tw1ddle/haxe-kiwi) implementations of the
 Cassowary constraint solving algorithm
